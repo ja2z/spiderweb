@@ -20,8 +20,9 @@ function App() {
   const options = useMemo(() => {
     const dimensions = config.dimension;
     const measures = config.measures;
-
+console.log(dimensions,measures);
     // transform sigmaData --> treemap data
+    console.log(sigmaData);
     const options = {
       chart: {
         polar: true,
