@@ -45,7 +45,7 @@ function App() {
       client.config.getKey("Separate Axes y/n?") === "Y" ? true : false;
 
     // transform sigmaData --> treemap data
-    if (sigmaData?.[dimensions]) {
+    if (sigmaData?.[dimensions] && sigmaColumns?.[measures[0]]) {
       let series = [];
       let yAxis = [];
       const categories = sigmaData[dimensions];
