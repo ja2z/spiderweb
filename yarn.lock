@@ -1570,7 +1570,7 @@
 
 "@sigmacomputing/plugin@^0.6.56":
   version "0.6.56"
-  resolved "https://registry.npmjs.org/@sigmacomputing/plugin/-/plugin-0.6.56.tgz"
+  resolved "https://registry.yarnpkg.com/@sigmacomputing/plugin/-/plugin-0.6.56.tgz#9a9eca9823abf12144ed6cff73243215620f3ca3"
   integrity sha512-pbt/3IgGV6RPh+CUq/urnp7FHLKNcLf0LBNHlhUZwj5Y3tKtAaj6AjdqPj2GaTIUiyWdfCkZQ6t/TlI+U4DbDg==
 
 "@sinonjs/commons@^1.7.0":
