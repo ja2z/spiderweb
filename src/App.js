@@ -14,8 +14,9 @@ client.config.configureEditorPanel([
   { name: "source", type: "element" },
   { name: "dimension", type: "column", source: "source", allowMultiple: false },
   { name: "measures", type: "column", source: "source", allowMultiple: true },
-  { name: "Separate Axes y/n?", type: "text", defaultValue: "N" },
-  { name: "Polygon Fill y/n?", type: "text", defaultValue: "N" },
+  { name: "Separate Axes", type: "checkbox" },
+  { name: "Polygon Fill", type: "checkbox" },
+  { name: "Show Legend", type: "checkbox" },
 ]);
 
 HighchartsMore(Highcharts);
@@ -37,12 +38,14 @@ function App() {
   const config = useConfig();
   const sigmaData = useElementData(config.source);
   const sigmaColumns = useElementColumns(config.source);
+  const polygonFill = (client.config.getKey)("Polygon Fill");
+  const separateAxes = (client.config.getKey)("Separate Axes");
+  const showLegend = (client.config.getKey)("Show Legend");
   const ref = useRef();
+
   const options = useMemo(() => {
     const dimensions = config.dimension;
     const measures = config.measures;
-    const separateY =
-      client.config.getKey("Separate Axes y/n?") === "Y" ? true : false;
 
     // transform sigmaData --> treemap data
     if (sigmaData?.[dimensions] && sigmaColumns?.[measures[0]]) {
@@ -62,7 +65,7 @@ function App() {
         series[i].name = sigmaColumns[measures[i]].name;
         series[i].pointPlacement = "on";
         series[i].data = [];
-        if (client.config.getKey("Polygon Fill y/n?") === "Y") {
+        if (polygonFill) {
           series[i].type = "polygon";
           series[i].opacity = "0.3";
         } else {
@@ -73,10 +76,10 @@ function App() {
         series[i].color = seriesColors[i];
         series[i].lineWidth = 2;
         // if axes are separate, add a y index to each series
-        if (separateY) series[i].yAxis = i;
+        if (separateAxes) series[i].yAxis = i;
       }
       // if using a shared axis, take the first yAxis config only
-      if (!separateY) yAxis = yAxis[0];
+      if (!separateAxes) yAxis = yAxis[0];
 
       const options = {
         chart: {
@@ -88,7 +91,7 @@ function App() {
           text: undefined,
         },
         pane: {
-          //size: "80%",
+          size: "100%",
         },
         xAxis: {
           categories: categories,
@@ -103,6 +106,7 @@ function App() {
             '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>',
         },
         legend: {
+          enabled: showLegend,
           align: "right",
           verticalAlign: "middle",
           layout: "vertical",
@@ -121,6 +125,7 @@ function App() {
               },
               chartOptions: {
                 legend: {
+                  enabled: showLegend,
                   align: "center",
                   verticalAlign: "bottom",
                   layout: "horizontal",
@@ -135,7 +140,7 @@ function App() {
       };
       return options;
     }
-  }, [config, sigmaData, sigmaColumns]);
+  }, [config, sigmaData, sigmaColumns, polygonFill]);
 
   return (
     <div>
