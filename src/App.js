@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useCallback } from "react";
 import Highcharts from "highcharts";
 import HighchartsMore from "highcharts/highcharts-more";
 import HighchartsReact from "highcharts-react-official";
@@ -38,10 +38,22 @@ function App() {
   const config = useConfig();
   const sigmaData = useElementData(config.source);
   const sigmaColumns = useElementColumns(config.source);
-  const polygonFill = (client.config.getKey)("Polygon Fill");
-  const separateAxes = (client.config.getKey)("Separate Axes");
-  const showLegend = (client.config.getKey)("Show Legend");
+  const polygonFill = client.config.getKey("Polygon Fill");
+  const separateAxes = client.config.getKey("Separate Axes");
+  const showLegend = client.config.getKey("Show Legend");
   const ref = useRef();
+
+  const tooltipFormatter = useCallback(function() {
+    let s = '';
+    this.points.forEach(point => {
+      const value = point.y;
+      const formattedValue = (value > -1 && value < 1) 
+        ? value.toFixed(2)
+        : Highcharts.numberFormat(value, 0, '.', ',');
+      s += `<span style="color:${point.series.color}">${point.series.name}: <b>${formattedValue}</b><br/>`;
+    });
+    return s;
+  }, []);
 
   const options = useMemo(() => {
     const dimensions = config.dimension;
@@ -102,17 +114,7 @@ function App() {
         yAxis: yAxis,
         tooltip: {
           shared: true,
-          formatter: function() {
-            let s = '';
-            this.points.forEach(point => {
-              const value = point.y;
-              const formattedValue = (value > -1 && value < 1) 
-                ? value.toFixed(2)
-                : Highcharts.numberFormat(value, 0, '.', ',');
-              s += `<span style="color:${point.series.color}">${point.series.name}: <b>${formattedValue}</b><br/>`;
-            });
-            return s;
-          }
+          formatter: tooltipFormatter
         },
         legend: {
           enabled: showLegend,
@@ -149,7 +151,7 @@ function App() {
       };
       return options;
     }
-  }, [config, sigmaData, sigmaColumns, polygonFill]);
+  }, [config, sigmaData, sigmaColumns, polygonFill, separateAxes, showLegend, tooltipFormatter]);
 
   return (
     <div>
