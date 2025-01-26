@@ -91,7 +91,7 @@ function App() {
           text: undefined,
         },
         pane: {
-          size: "100%",
+          size: "90%",
         },
         xAxis: {
           categories: categories,
@@ -102,8 +102,17 @@ function App() {
         yAxis: yAxis,
         tooltip: {
           shared: true,
-          pointFormat:
-            '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>',
+          formatter: function() {
+            let s = '';
+            this.points.forEach(point => {
+              const value = point.y;
+              const formattedValue = (value > -1 && value < 1) 
+                ? value.toFixed(2)
+                : Highcharts.numberFormat(value, 0, '.', ',');
+              s += `<span style="color:${point.series.color}">${point.series.name}: <b>${formattedValue}</b><br/>`;
+            });
+            return s;
+          }
         },
         legend: {
           enabled: showLegend,
